@@ -18,6 +18,7 @@ function createWindow(): void {
     vibrancy: 'under-window',
     visualEffectState: 'active',
     backgroundMaterial: 'acrylic',
+
     roundedCorners: true,
     titleBarStyle: 'hidden',
     trafficLightPosition: { x: 15, y: 10 },
@@ -31,6 +32,7 @@ function createWindow(): void {
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
+    mainWindow.webContents.openDevTools()
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {

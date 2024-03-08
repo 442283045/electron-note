@@ -14,6 +14,7 @@
     @apply bg-transparent;
     @apply font-mono antialiased text-white;
     @apply overflow-hidden;
+    @apply rounded-md;
   }
   header {
     -webkit-app-region: drag;
