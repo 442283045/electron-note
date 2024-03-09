@@ -12,7 +12,9 @@ if (process.contextIsolated) {
       locale: navigator.language,
       getNotes: (...args: Parameters<GetNotes>) => ipcRenderer.invoke('getNotes', ...args),
       createNote: (...args: Parameters<CreateNote>) => ipcRenderer.invoke('createNote', ...args),
-      deleteNote: (...args: Parameters<DeleteNote>) => ipcRenderer.invoke('deleteNote', ...args)
+      deleteNote: (...args: Parameters<DeleteNote>) => ipcRenderer.invoke('deleteNote', ...args),
+      readContent: (...args: Parameters<DeleteNote>) => ipcRenderer.invoke('readContent', ...args),
+      writeContent: (...args: Parameters<DeleteNote>) => ipcRenderer.invoke('writeContent', ...args)
     })
   } catch (error) {
     console.error(error)

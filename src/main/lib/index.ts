@@ -1,7 +1,7 @@
 import { appDirectoryName, fileEncoding } from '@shared/constants'
 import { NoteInfo } from '@shared/models'
-import { CreateNote, GetNotes } from '@shared/types'
-import { access, createFile, ensureDir, readdir, rm, stat } from 'fs-extra'
+import { CreateNote, GetNotes, ReadContent, WriteContent } from '@shared/types'
+import { access, createFile, ensureDir, readFile, readdir, rm, stat, writeFile } from 'fs-extra'
 import { homedir } from 'os'
 import { resolve } from 'path'
 
@@ -35,14 +35,36 @@ export const createNote: CreateNote = async (title: string) => {
     }
   }
 }
-export const deleteNote = async (fileName: string) => {
-  const fullName = fileName + '.md'
+export const deleteNote = async (title: string) => {
+  const fullName = title + '.md'
   const pathName = resolve(getRootDir(), fullName)
   try {
     await stat(pathName)
     await rm(pathName)
     return true
   } catch {
+    return false
+  }
+}
+export const readContent: ReadContent = async (title: string) => {
+  const fullName = title + '.md'
+  const pathName = resolve(getRootDir(), fullName)
+  try {
+    const content = await readFile(pathName, { encoding: fileEncoding })
+    return content
+  } catch (error) {
+    console.log(error)
+    return false
+  }
+}
+export const writeContent: WriteContent = async (title: string, content: string) => {
+  const fullName = title + '.md'
+  const pathName = resolve(getRootDir(), fullName)
+  try {
+    await writeFile(pathName, content, { encoding: fileEncoding })
+    return (await stat(pathName)).mtimeMs
+  } catch (error) {
+    console.log(error)
     return false
   }
 }

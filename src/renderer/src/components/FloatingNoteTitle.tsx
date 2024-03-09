@@ -7,11 +7,10 @@ export type FloatingNoteTitleProps = ComponentProps<'div'>
 
 export const FloatingNoteTitle = ({ className, ...props }: FloatingNoteTitleProps) => {
   const note = useAtomValue(selectedNoteAtom)
-
-  const title = note ? note.title : ''
+  if (!note) return <></>
   return (
     <div className={twMerge('flex justify-center sticky top-2', className)} {...props}>
-      <span className="text-gray-400">{title}</span>
+      <span className="text-gray-400">{note.title}</span>
     </div>
   )
 }
