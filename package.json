@@ -25,7 +25,9 @@
     "@electron-toolkit/utils": "^3.0.0",
     "@mdxeditor/editor": "^2.12.1",
     "electron-updater": "^6.1.8",
-    "jotai": "^2.7.0"
+    "fs-extra": "^11.2.0",
+    "jotai": "^2.7.0",
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config-prettier": "^2.0.0",

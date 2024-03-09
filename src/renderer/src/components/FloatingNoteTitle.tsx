@@ -7,7 +7,6 @@ export type FloatingNoteTitleProps = ComponentProps<'div'>
 
 export const FloatingNoteTitle = ({ className, ...props }: FloatingNoteTitleProps) => {
   const note = useAtomValue(selectedNoteAtom)
-  console.log(note)
 
   const title = note ? note.title : ''
   return (
