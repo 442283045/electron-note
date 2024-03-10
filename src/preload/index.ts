@@ -1,4 +1,11 @@
-import { CreateNote, DeleteNote, GetNotes } from '@shared/types'
+import {
+  CreateNote,
+  DeleteNote,
+  GetNotes,
+  ReadContent,
+  RenameFile,
+  WriteContent
+} from '@shared/types'
 import { contextBridge, ipcRenderer } from 'electron'
 
 // Custom APIs for renderer
@@ -13,15 +20,17 @@ if (process.contextIsolated) {
       getNotes: (...args: Parameters<GetNotes>) => ipcRenderer.invoke('getNotes', ...args),
       createNote: (...args: Parameters<CreateNote>) => ipcRenderer.invoke('createNote', ...args),
       deleteNote: (...args: Parameters<DeleteNote>) => ipcRenderer.invoke('deleteNote', ...args),
-      readContent: (...args: Parameters<DeleteNote>) => ipcRenderer.invoke('readContent', ...args),
-      writeContent: (...args: Parameters<DeleteNote>) =>
+      readContent: (...args: Parameters<ReadContent>) => ipcRenderer.invoke('readContent', ...args),
+      writeContent: (...args: Parameters<WriteContent>) =>
         ipcRenderer.invoke('writeContent', ...args),
       openDir: () => ipcRenderer.invoke('openDir'),
       isAtWorkingDir: () => ipcRenderer.invoke('isAtWorkingDir'),
 
       minimizeWindow: () => ipcRenderer.send('minimizeWindow'),
       maximizeWindow: () => ipcRenderer.send('maximizeWindow'),
-      closeWindow: () => ipcRenderer.send('closeWindow')
+      closeWindow: () => ipcRenderer.send('closeWindow'),
+
+      renameFile: (...args: Parameters<RenameFile>) => ipcRenderer.invoke('renameFile', ...args)
     })
   } catch (error) {
     console.error(error)

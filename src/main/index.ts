@@ -2,7 +2,14 @@ import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-import { CreateNote, GetNotes, DeleteNote, ReadContent, WriteContent } from '@shared/types'
+import {
+  CreateNote,
+  GetNotes,
+  DeleteNote,
+  ReadContent,
+  WriteContent,
+  RenameFile
+} from '@shared/types'
 import {
   createNote,
   deleteNote,
@@ -11,7 +18,8 @@ import {
   handleOpenFile,
   isAtWorkingDir,
   readContent,
-  writeContent
+  writeContent,
+  renameFile
 } from './lib'
 import { appendFile } from 'fs-extra'
 appendFile(
@@ -101,9 +109,9 @@ app.whenReady().then(() => {
   ipcMain.handle('createNote', (_, ...args: Parameters<CreateNote>) => createNote(...args))
   ipcMain.handle('deleteNote', (_, ...args: Parameters<DeleteNote>) => deleteNote(...args))
   ipcMain.handle('readContent', (_, ...args: Parameters<ReadContent>) => readContent(...args))
-  ipcMain.handle('writeContent', (_, ...args: Parameters<WriteContent>) => writeContent(...args))
-
-  ipcMain.handle('isAtWorkingDir', () => isAtWorkingDir())
+  ipcMain.handle('writeContent', (_, ...args: Parameters<WriteContent>) => writeContent(...args)),
+    ipcMain.handle('isAtWorkingDir', () => isAtWorkingDir()),
+    ipcMain.handle('renameFile', (_, ...args: Parameters<RenameFile>) => renameFile(...args))
 
   ipcMain.handle('openDir', () => openDir())
   createWindow()

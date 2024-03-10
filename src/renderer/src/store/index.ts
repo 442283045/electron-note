@@ -36,9 +36,11 @@ export const selectedNoteAtom = unwrap(
     }
 )
 export const createEmptyNoteAtom = atom(null, async (get, set) => {
+  console.log('create')
   const notes = get(notesAtom)
-  const title = `Note ${notes.length + 1}`
+  const title = `${Math.random().toString().slice(2)}`
   const result = await window.context.createNote(title)
+  console.log('1232')
   if (result === false) return
   const newNote: NoteInfo = {
     title,
@@ -87,4 +89,27 @@ export const openDir = atom(null, async (_, set) => {
   if (!result) return
   set(isAtDir, true)
   set(notesAtom, loadNotes())
+})
+
+export const renameFile = atom(null, async (get, set, prevName: string, name: string) => {
+  const notes = get(notesAtom)
+  console.log('Rename: ', prevName, name)
+  const result = await window.context.renameFile(prevName, name)
+  if (!result) {
+    // TODO: Warn user that the operate is failed
+    console.log('Rename operate is failed')
+    return
+  }
+  set(
+    notesAtom,
+    notes.map((note) => {
+      if (note.title === prevName) {
+        return {
+          ...note,
+          title: name
+        }
+      }
+      return note
+    })
+  )
 })

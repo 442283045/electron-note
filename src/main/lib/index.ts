@@ -2,7 +2,17 @@ import { workingDirInfo, fileEncoding } from '@shared/constants'
 import { NoteInfo } from '@shared/models'
 import { CreateNote, GetNotes, ReadContent, WriteContent } from '@shared/types'
 import { dialog } from 'electron'
-import { access, createFile, ensureDir, readFile, readdir, rm, stat, writeFile } from 'fs-extra'
+import {
+  createFile,
+  ensureDir,
+  pathExists,
+  readFile,
+  readdir,
+  rename,
+  rm,
+  stat,
+  writeFile
+} from 'fs-extra'
 import { dirname, resolve } from 'path'
 
 export const isAtWorkingDir = () => {
@@ -23,18 +33,20 @@ export const getNotes: GetNotes = async () => {
   return Promise.all(notes.map(getNoteInfoFromFilename))
 }
 export const createNote: CreateNote = async (title: string) => {
+  console.log('hello')
   if (!isAtWorkingDir()) return false
   const titleName = title.replace(/\.md$/, '') + '.md'
-  try {
-    await access(titleName)
-    return false
-  } catch {
+  const isFileExists = await pathExists(titleName)
+  console.log({ isFileExists, titleName })
+  if (!isFileExists) {
     await createFile(resolve(workingDirInfo.workingDir!, titleName))
     const fileStat = await stat(resolve(workingDirInfo.workingDir!, titleName))
     return {
       title: titleName,
       lastEditTime: fileStat.mtimeMs
     }
+  } else {
+    return false
   }
 }
 export const deleteNote = async (title: string) => {
@@ -100,4 +112,20 @@ export const openDir = async () => {
   if (!result) return
   workingDirInfo.workingDir = result.filePaths[0]
   return result
+}
+
+export const renameFile = async (prevName: string, name: string) => {
+  try {
+    if (!workingDirInfo.workingDir) return false
+    const isFileExists = await pathExists(resolve(workingDirInfo.workingDir, prevName + '.md'))
+    if (!isFileExists) return false
+    await rename(
+      resolve(workingDirInfo.workingDir, prevName + '.md'),
+      resolve(workingDirInfo.workingDir, name + '.md')
+    )
+    return true
+  } catch (error) {
+    console.log(error)
+    return false
+  }
 }
