@@ -14,7 +14,7 @@ function createWindow(): void {
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
     center: true,
-    title: 'Electron note',
+    title: 'Electron Note',
     transparent: true,
     frame: false,
     vibrancy: 'under-window',
@@ -47,7 +47,6 @@ function createWindow(): void {
       mainWindow.close()
     })
     mainWindow.show()
-    mainWindow.webContents.openDevTools()
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
