@@ -14,7 +14,11 @@ if (process.contextIsolated) {
       createNote: (...args: Parameters<CreateNote>) => ipcRenderer.invoke('createNote', ...args),
       deleteNote: (...args: Parameters<DeleteNote>) => ipcRenderer.invoke('deleteNote', ...args),
       readContent: (...args: Parameters<DeleteNote>) => ipcRenderer.invoke('readContent', ...args),
-      writeContent: (...args: Parameters<DeleteNote>) => ipcRenderer.invoke('writeContent', ...args)
+      writeContent: (...args: Parameters<DeleteNote>) =>
+        ipcRenderer.invoke('writeContent', ...args),
+      minimizeWindow: () => ipcRenderer.send('minimizeWindow'),
+      maximizeWindow: () => ipcRenderer.send('maximizeWindow'),
+      closeWindow: () => ipcRenderer.send('closeWindow')
     })
   } catch (error) {
     console.error(error)

@@ -9,6 +9,9 @@ export declare global {
       deleteNote: DeleteNote
       readContent: ReadContent
       writeContent: WriteContent
+      minimizeWindow: () => void
+      maximizeWindow: () => void
+      closeWindow: () => void
     }
   }
 }

@@ -18,5 +18,11 @@ export const useMarkdownEditor = () => {
     autoSaveInterval,
     { leading: false, trailing: true }
   )
-  return { selectedNote, handleAutoSaving, editorRef }
+  const handleBlur = async () => {
+    if (!selectedNote) return
+    await handleAutoSaving.flush()
+    // handleAutoSaving.cancel()
+    // await saveNote(content)
+  }
+  return { selectedNote, handleAutoSaving, editorRef, handleBlur }
 }

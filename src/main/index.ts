@@ -33,6 +33,19 @@ function createWindow(): void {
   })
 
   mainWindow.on('ready-to-show', () => {
+    ipcMain.on('minimizeWindow', () => {
+      mainWindow.minimize()
+    })
+    ipcMain.on('maximizeWindow', () => {
+      if (mainWindow.isMaximized()) {
+        mainWindow.unmaximize()
+      } else {
+        mainWindow.maximize()
+      }
+    })
+    ipcMain.on('closeWindow', () => {
+      mainWindow.close()
+    })
     mainWindow.show()
     mainWindow.webContents.openDevTools()
   })
@@ -72,6 +85,7 @@ app.whenReady().then(() => {
   ipcMain.handle('deleteNote', (_, ...args: Parameters<DeleteNote>) => deleteNote(...args))
   ipcMain.handle('readContent', (_, ...args: Parameters<ReadContent>) => readContent(...args))
   ipcMain.handle('writeContent', (_, ...args: Parameters<WriteContent>) => writeContent(...args))
+
   createWindow()
 
   app.on('activate', function () {

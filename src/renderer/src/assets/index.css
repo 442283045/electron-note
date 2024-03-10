@@ -16,7 +16,7 @@
     @apply overflow-hidden;
     @apply rounded-md;
   }
-  header {
+  .draggable {
     -webkit-app-region: drag;
   }
   button {
