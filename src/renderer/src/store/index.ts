@@ -4,9 +4,14 @@ import { type NoteInfo } from '@shared/models'
 
 const loadNotes = async () => {
   const notes = await window.context.getNotes()
+  if (notes === false) return []
   return notes.sort((a, b) => b.lastEditTime - a.lastEditTime)
 }
-
+export const isAtWokingDir = () => {
+  return window.context.isAtWorkingDir()
+}
+export const isAtDirPromise = atom<boolean | Promise<boolean>>(isAtWokingDir())
+export const isAtDir = unwrap(isAtDirPromise, (prev) => prev ?? false)
 export const notesAtomPromise = atom<NoteInfo[] | Promise<NoteInfo[]>>(loadNotes())
 export const notesAtom = unwrap(notesAtomPromise, (prev) => (prev ? prev : []))
 export const selectedNoteIndexAtom = atom<number | null>(null)
@@ -43,8 +48,6 @@ export const createEmptyNoteAtom = atom(null, async (get, set) => {
   set(selectedNoteIndexAtom, 0)
 })
 export const saveNoteAtom = atom(null, async (get, set, content: string) => {
-  console.log('saving note')
-  console.log(content)
   const selectedNote = get(selectedNoteAtom)
   const notes = get(notesAtom)
   if (!selectedNote || !notes) return
@@ -77,4 +80,11 @@ export const deleteNoteAtom = atom(null, async (get, set) => {
     notes.filter((note) => note.title !== selectedNote.title)
   )
   set(selectedNoteIndexAtom, null)
+})
+
+export const openDir = atom(null, async (_, set) => {
+  const result = await window.context.openDir()
+  if (!result) return
+  set(isAtDir, true)
+  set(notesAtom, loadNotes())
 })

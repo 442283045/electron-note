@@ -16,6 +16,9 @@ if (process.contextIsolated) {
       readContent: (...args: Parameters<DeleteNote>) => ipcRenderer.invoke('readContent', ...args),
       writeContent: (...args: Parameters<DeleteNote>) =>
         ipcRenderer.invoke('writeContent', ...args),
+      openDir: () => ipcRenderer.invoke('openDir'),
+      isAtWorkingDir: () => ipcRenderer.invoke('isAtWorkingDir'),
+
       minimizeWindow: () => ipcRenderer.send('minimizeWindow'),
       maximizeWindow: () => ipcRenderer.send('maximizeWindow'),
       closeWindow: () => ipcRenderer.send('closeWindow')

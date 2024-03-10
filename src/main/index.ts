@@ -3,7 +3,25 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { CreateNote, GetNotes, DeleteNote, ReadContent, WriteContent } from '@shared/types'
-import { createNote, deleteNote, getNotes, readContent, writeContent } from './lib'
+import {
+  createNote,
+  deleteNote,
+  getNotes,
+  openDir,
+  handleOpenFile,
+  isAtWorkingDir,
+  readContent,
+  writeContent
+} from './lib'
+import { appendFile } from 'fs-extra'
+appendFile(
+  'C:\\Users\\44228\\Desktop\\New Text Document.txt',
+  '\n' + JSON.stringify(process.argv),
+  {
+    encoding: 'utf8',
+    flag: 'a'
+  }
+)
 
 function createWindow(): void {
   // Create the browser window.
@@ -53,7 +71,6 @@ function createWindow(): void {
     shell.openExternal(details.url)
     return { action: 'deny' }
   })
-
   // HMR for renderer base on electron-vite cli.
   // Load the remote URL for development or the local html file for production.
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
@@ -63,6 +80,7 @@ function createWindow(): void {
   }
 }
 
+app.on('open-file', () => handleOpenFile())
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
@@ -85,6 +103,9 @@ app.whenReady().then(() => {
   ipcMain.handle('readContent', (_, ...args: Parameters<ReadContent>) => readContent(...args))
   ipcMain.handle('writeContent', (_, ...args: Parameters<WriteContent>) => writeContent(...args))
 
+  ipcMain.handle('isAtWorkingDir', () => isAtWorkingDir())
+
+  ipcMain.handle('openDir', () => openDir())
   createWindow()
 
   app.on('activate', function () {

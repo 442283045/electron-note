@@ -12,7 +12,6 @@ export const useMarkdownEditor = () => {
   const handleAutoSaving = throttle(
     async (content: string) => {
       if (!selectedNote) return
-      console.log('Auto saving: ', selectedNote.title)
       await saveNote(content)
     },
     autoSaveInterval,

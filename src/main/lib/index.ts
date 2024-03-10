@@ -1,16 +1,17 @@
-import { appDirectoryName, fileEncoding } from '@shared/constants'
+import { workingDirInfo, fileEncoding } from '@shared/constants'
 import { NoteInfo } from '@shared/models'
 import { CreateNote, GetNotes, ReadContent, WriteContent } from '@shared/types'
+import { dialog } from 'electron'
 import { access, createFile, ensureDir, readFile, readdir, rm, stat, writeFile } from 'fs-extra'
-import { homedir } from 'os'
-import { resolve } from 'path'
+import { dirname, resolve } from 'path'
 
-export const getRootDir = () => {
-  return `${homedir()}/${appDirectoryName}`
+export const isAtWorkingDir = () => {
+  return !!workingDirInfo.workingDir
 }
 
 export const getNotes: GetNotes = async () => {
-  const rootDir = getRootDir()
+  if (!isAtWorkingDir()) return false
+  const rootDir = workingDirInfo.workingDir!
 
   await ensureDir(rootDir)
 
@@ -22,13 +23,14 @@ export const getNotes: GetNotes = async () => {
   return Promise.all(notes.map(getNoteInfoFromFilename))
 }
 export const createNote: CreateNote = async (title: string) => {
+  if (!isAtWorkingDir()) return false
   const titleName = title.replace(/\.md$/, '') + '.md'
   try {
     await access(titleName)
     return false
   } catch {
-    await createFile(resolve(getRootDir(), titleName))
-    const fileStat = await stat(resolve(getRootDir(), titleName))
+    await createFile(resolve(workingDirInfo.workingDir!, titleName))
+    const fileStat = await stat(resolve(workingDirInfo.workingDir!, titleName))
     return {
       title: titleName,
       lastEditTime: fileStat.mtimeMs
@@ -36,8 +38,9 @@ export const createNote: CreateNote = async (title: string) => {
   }
 }
 export const deleteNote = async (title: string) => {
+  if (!isAtWorkingDir()) return false
   const fullName = title + '.md'
-  const pathName = resolve(getRootDir(), fullName)
+  const pathName = resolve(workingDirInfo.workingDir!, fullName)
   try {
     await stat(pathName)
     await rm(pathName)
@@ -47,8 +50,9 @@ export const deleteNote = async (title: string) => {
   }
 }
 export const readContent: ReadContent = async (title: string) => {
+  if (!isAtWorkingDir()) return false
   const fullName = title + '.md'
-  const pathName = resolve(getRootDir(), fullName)
+  const pathName = resolve(workingDirInfo.workingDir!, fullName)
   try {
     const content = await readFile(pathName, { encoding: fileEncoding })
     return content
@@ -58,8 +62,9 @@ export const readContent: ReadContent = async (title: string) => {
   }
 }
 export const writeContent: WriteContent = async (title: string, content: string) => {
+  if (!isAtWorkingDir()) return false
   const fullName = title + '.md'
-  const pathName = resolve(getRootDir(), fullName)
+  const pathName = resolve(workingDirInfo.workingDir!, fullName)
   try {
     await writeFile(pathName, content, { encoding: fileEncoding })
     return (await stat(pathName)).mtimeMs
@@ -71,9 +76,28 @@ export const writeContent: WriteContent = async (title: string, content: string)
 export const getNoteInfoFromFilename = async (
   filename: string
 ): Promise<Pick<NoteInfo, 'title' | 'lastEditTime'>> => {
-  const fileStats = await stat(`${getRootDir()}/${filename}`)
+  const fileStats = await stat(`${workingDirInfo.workingDir}/${filename}`)
   return {
     title: filename.replace(/.md$/, ''),
     lastEditTime: fileStats.mtimeMs
   }
+}
+export const handleOpenFile = (...args: string[]) => {
+  if (import.meta.env.DEV) {
+    if (args.length >= 3) workingDirInfo.openFileName = args[2]
+  } else {
+    if (args.length >= 2) workingDirInfo.openFileName = args[1]
+  }
+  if (workingDirInfo.openFileName) {
+    workingDirInfo.workingDir = dirname(workingDirInfo.openFileName)
+  }
+}
+
+export const openDir = async () => {
+  const result = await dialog.showOpenDialog({
+    properties: ['openDirectory']
+  })
+  if (!result) return
+  workingDirInfo.workingDir = result.filePaths[0]
+  return result
 }
