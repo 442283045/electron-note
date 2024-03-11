@@ -1,6 +1,6 @@
 # note
 
-An Electron application with React and TypeScript
+An Electron based markdown editor application with React and TypeScript
 
 ## Recommended IDE Setup
 
