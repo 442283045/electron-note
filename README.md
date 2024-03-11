@@ -1,4 +1,4 @@
-# note
+# Electron Note
 
 An Electron based markdown editor application with React and TypeScript
 
