@@ -36,11 +36,9 @@ export const selectedNoteAtom = unwrap(
     }
 )
 export const createEmptyNoteAtom = atom(null, async (get, set) => {
-  console.log('create')
   const notes = get(notesAtom)
   const title = `${Math.random().toString().slice(2)}`
   const result = await window.context.createNote(title)
-  console.log('1232')
   if (result === false) return
   const newNote: NoteInfo = {
     title,
